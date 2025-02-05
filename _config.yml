@@ -31,3 +31,6 @@ comments:
 plugins:
   - jekyll-feed
   - jekyll-sitemap
+
+google_analystics:
+  id: G-LH9MQBVG1C

@@ -21,6 +21,8 @@
   {% endif %}
   {% if site.comments.disqus_shortname and page.layout == "post" %}<script src="//{{ site.comments.disqus_shortname }}.disqus.com/embed.js" async></script>{% endif %}
   {% if site.comments.isso_domain and page.layout == "post" %}<script data-isso="http://{{ site.comments.isso_domain }}" src="//{{ site.comments.isso_domain }}/js/embed.min.js"></script>{% endif %}
+</head>
+  {% include google-analystics.html %}
   {% if site.show_sidebar or site.sidebar %}{% include sidebar.html %}{% endif %}
   
   {% if site.navigation %}
@@ -28,7 +30,6 @@
   {% else %}
     {% assign pages = site.pages | where_exp: "item", "item.title and item.sitemap != false" | sort: "order" %}
   {% endif %}
-</head>
 <body>
 <header>
   <a href="{{ "/" | relative_url }}" class="title">{{ site.title | escape }}</a>
