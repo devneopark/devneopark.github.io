@@ -1,0 +1,49 @@
+name: 메인 브랜치 푸시 워크플로우
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  diff-files:
+    environment:
+      name: github-pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      - name: "브랜치 체크아웃"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "파이썬 셋업"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: "페이지 빌드"
+        run: |
+          pip install PyYAML && \
+          pip install markdown && \
+          mkdir -p dist/posts dist/tags && \
+          cp -r _assets/ dist/assets/ && \
+          rm dist/assets/template.html && \
+          python3 src/build.py
+
+      - name: "Pages 설정"
+        uses: actions/configure-pages@v5
+
+      - name: "아티팩트 업로드"
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist'
+
+      - name: "배포"
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    ${head.tags}
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/191661914?v=4">
+    <link rel="stylesheet" type="text/css" href="/assets/css/root.css">
+    <title>${title}</title>
+</head>
+<body>
+<nav>
+    <img id="gh-avatar" src="https://avatars.githubusercontent.com/u/191661914?v=4" alt="avatar"/>
+    <ul id="menus">
+        <a href="/"><li>Home</li></a>
+        <a href="/posts"><li>Post</li></a>
+        <a href="/tags"><li>Tag</li></a>
+    </ul>
+</nav>
+<main>
+    <article>
+        <header id="article-header-wrapper">
+            ${article.header}
+        </header>
+        <figure id="article-body-wrapper">
+            <div id="article-body-content-wrapper">
+                ${article.content}
+            </div>
+        </figure>
+    </article>
+    <section id="additional-wrapper"></section>
+</main>
+</body>
+${jss}
+</html>
