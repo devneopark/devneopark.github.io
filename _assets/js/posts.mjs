@@ -14,14 +14,14 @@ const fetchPosts = async page => {
     const res = await fetch(`/assets/pages/posts/pages.${page}.json`)
     if (!res.ok) return null
     return await res.json()
-  } catch {
+  } catch (e) {
     return null
   }
 }
 
 const makePostItem = post => `
 <li>
-  <a class="post" href="/posts/${post.seq}" id="post-item">
+  <a class="post" href="/posts/${post.seq}.html" id="post-item">
     <h3>${post.title}</h3>
     <p>${post.summary}</p>
   </a>

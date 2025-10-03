@@ -16,7 +16,7 @@ const fetchTags = async () => {
     try {
         const res = await fetch('/assets/pages/tags/tags.json')
         return res.ok ? res.json() : null
-    } catch {
+    } catch (e) {
         return null
     }
 }
@@ -25,7 +25,7 @@ const fetchTagPosts = async ({tag, page}) => {
     try {
         const res = await fetch(`/assets/pages/tags/${tag}/pages.${page}.json`)
         return res.ok ? res.json() : null
-    } catch {
+    } catch (e) {
         return null
     }
 }
@@ -34,12 +34,12 @@ const makeTagItem = (tag, activeTag) => {
     if (tag === activeTag) {
         return `<li><a class="disabled" aria-disabled="true"><code>${tag}</code></a></li>`
     }
-    return `<li><a href="/tags?tag=${tag}"><code>${tag}</code></a></li>`
+    return `<li><a href="/tags.html?tag=${tag}"><code>${tag}</code></a></li>`
 }
 
 const makeTagsBlock = (tags, activeTag) => `<div id="tags-wrapper"><ul>${tags.map(t => makeTagItem(t, activeTag)).join('')}</ul></div>`
 
-const makePostItem = post => `<li><a href="/posts/${post.seq}">${post.title}</a></li>`
+const makePostItem = post => `<li><a href="/posts/${post.seq}.html">${post.title}</a></li>`
 const makePostsBlock = posts => `<div id="tags-posts-wrapper"><ul>${posts.map(makePostItem).join('')}</ul></div>`
 
 const makeLoadMoreButton = page => `<button id="load-more" data-page="${page}">더보기</button>`

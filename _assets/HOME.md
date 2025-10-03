@@ -1,4 +1,4 @@
-# Hi I'm Neo.
+# Hi. I'm Neo.
 
 As a software developer with a year of professional experience.  
 I am committed to continuous learning, innovation, and knowledge sharing.

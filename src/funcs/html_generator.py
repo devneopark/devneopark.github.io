@@ -3,7 +3,7 @@ def _render_tags_ul(tags):
         return "<ul></ul>"
     items = []
     for t in tags:
-        items.append(f"<li><a href='/tags?tag={t}'>#{t}</a></li>")
+        items.append(f"<li><a href='/tags.html?tag={t}'>#{t}</a></li>")
     return "<ul>\n" + "\n".join(items) + "\n</ul>"
 
 
@@ -37,7 +37,7 @@ def generate_static(html_path, html_template, body, title, js_path: str):
     template = html_template
     template = template.replace("${head.tags}", "")
     template = template.replace("${title}", title)
-    template = template.replace("${jss}", f"<script src='{js_path}'></script>" if js_path else "")
+    template = template.replace("${jss}", f"<script type='module' src='{js_path}'></script>" if js_path else "")
     template = template.replace("            ${article.header}", f"<h1>{title}</h1>")
     template = template.replace("                ${article.content}", body)
 

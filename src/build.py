@@ -59,13 +59,15 @@ def build_post_pages(html_template: str):
     posts_meta = []
     tags_map = {}
 
+    posts_dir = os.path.join(DIST_DIR, "posts")
+    ensure_dir(posts_dir)
+
     for filename in list_files(POSTS_DIR):
         meta, body = funcs.parser.parse(os.path.join(POSTS_DIR, filename))
         meta["filename"] = filename
 
         body_html = funcs.converter.convert(body)
-        html_path = os.path.join(DIST_DIR, "posts", str(meta["seq"]), "index.html")
-        ensure_dir(os.path.dirname(html_path))
+        html_path = os.path.join(posts_dir, f"{meta['seq']}.html")
         funcs.html_generator.generate_post(
             html_path, html_template, body_html, meta, jss=""
         )
@@ -110,16 +112,15 @@ def build_static_pages(html_template: str):
     )
 
     funcs.html_generator.generate_static(
-        os.path.join(DIST_DIR, "posts", "index.html"),
+        os.path.join(DIST_DIR, "posts.html"),
         html_template,
         "",
         "Posts",
         "/assets/js/posts.mjs"
     )
 
-    ensure_dir(os.path.join(DIST_DIR, "tags"))
     funcs.html_generator.generate_static(
-        os.path.join(DIST_DIR, "tags", "index.html"),
+        os.path.join(DIST_DIR, "tags.html"),
         html_template,
         "",
         "Tags",
