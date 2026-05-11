@@ -251,6 +251,23 @@ main {
       margin-bottom: 1rem;
     }
 
+    ul, ol {
+      margin: 1rem 0;
+      padding-left: clamp(1rem, 2vw, 1.2rem);
+    }
+
+    li {
+      list-style-position: outside;
+      margin: 0.35rem 0;
+      padding-left: clamp(0.1rem, 0.5vw, 0.2rem);
+    }
+
+    li > ul,
+    li > ol {
+      margin: 0.35rem 0;
+      padding-left: clamp(0.85rem, 1.8vw, 1rem);
+    }
+
     blockquote {
       margin: 1.5rem 0;
     }
