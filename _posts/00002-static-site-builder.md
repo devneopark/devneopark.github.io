@@ -7,7 +7,7 @@ posted_at: "2025-09-17"
 ---
 
 > ### 시리즈
-> 정적 사이트 빌더 구축기(with. GitHub Pages) - 上 - 현재 포스트
+> 정적 사이트 빌더 구축기(with. GitHub Pages) - 上 - 현재 포스트  
 > [정적 사이트 빌더 구축기(with. GitHub Pages) - 下]()
 
 # 다시 기록

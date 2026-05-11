@@ -116,9 +116,9 @@ func PreparedCoupon issue(UserId userId, CouponId couponId) {
 
 테스트 조건:
 
-동시요청수 = 10,000
-재고 = 10,000
-스레드수 = 200
+- 동시요청수 = 10,000
+- 재고 = 10,000
+- 스레드수 = 200
 
 비교대상:
 
