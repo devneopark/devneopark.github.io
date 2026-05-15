@@ -18,21 +18,27 @@
 
 :root {
   color-scheme: light dark;
-  --light-mode-background-color: #fafafa;
-  --light-mode-font-color: #2d3748;
-  --light-mode-font-color-secondary: #718096;
-  --light-mode-box-shadow-color: rgba(0, 0, 0, 0.08);
-  --light-mode-highlight-color: rgba(66, 153, 225, 0.1);
-  --light-mode-accent-color: #4a6fa5;
-  --light-mode-border-color: #e2e8f0;
+  --light-mode-background-color: #fffaf5;
+  --light-mode-surface-color: #fffdf9;
+  --light-mode-code-background-color: #fff1df;
+  --light-mode-font-color: #2f261f;
+  --light-mode-font-color-secondary: #80644d;
+  --light-mode-box-shadow-color: rgba(122, 66, 18, 0.14);
+  --light-mode-highlight-color: rgba(231, 143, 60, 0.12);
+  --light-mode-accent-color: #E78F3CFF;
+  --light-mode-accent-foreground-color: #24170c;
+  --light-mode-border-color: rgba(231, 143, 60, 0.28);
 
-  --dark-mode-background-color: #1a202c;
-  --dark-mode-font-color: #e2e8f0;
-  --dark-mode-font-color-secondary: #a0aec0;
-  --dark-mode-box-shadow-color: rgba(0, 0, 0, 0.3);
-  --dark-mode-highlight-color: rgba(66, 153, 225, 0.2);
-  --dark-mode-accent-color: #90cdf4;
-  --dark-mode-border-color: #4a5568;
+  --dark-mode-background-color: #17110d;
+  --dark-mode-surface-color: #211812;
+  --dark-mode-code-background-color: #2b1f17;
+  --dark-mode-font-color: #f6ede5;
+  --dark-mode-font-color-secondary: #c9ad95;
+  --dark-mode-box-shadow-color: rgba(0, 0, 0, 0.36);
+  --dark-mode-highlight-color: rgba(231, 143, 60, 0.18);
+  --dark-mode-accent-color: #E78F3CFF;
+  --dark-mode-accent-foreground-color: #24170c;
+  --dark-mode-border-color: rgba(231, 143, 60, 0.34);
 }
 
 /* defaults */
@@ -68,14 +74,16 @@ a:hover {
 code {
   font-family: 'D2Coding', monospace;
   font-size: 0.9em;
-  background-color: light-dark(#edf2f7, #2d3748);
+  background-color: light-dark(var(--light-mode-code-background-color), var(--dark-mode-code-background-color));
+  border: 1px solid light-dark(var(--light-mode-border-color), var(--dark-mode-border-color));
   padding: 0.2em 0.4em;
   border-radius: 4px;
   color: light-dark(var(--light-mode-font-color), var(--dark-mode-font-color));
 }
 
 pre {
-  background-color: light-dark(#edf2f7, #2d3748);
+  background-color: light-dark(var(--light-mode-code-background-color), var(--dark-mode-code-background-color));
+  border: 1px solid light-dark(var(--light-mode-border-color), var(--dark-mode-border-color));
   border-radius: 8px;
   padding: 1rem;
   overflow-x: auto;
@@ -84,6 +92,7 @@ pre {
 
 pre code {
   background: none;
+  border: 0;
   padding: 0;
 }
 
@@ -118,7 +127,7 @@ p {
 }
 
 blockquote {
-  background-color: light-dark(rgba(66, 153, 225, 0.05), rgba(66, 153, 225, 0.1));
+  background-color: light-dark(rgba(231, 143, 60, 0.07), rgba(231, 143, 60, 0.12));
   padding: 1rem 1.5rem;
   margin: 1.5rem 0;
   border-left: 4px solid light-dark(var(--light-mode-accent-color), var(--dark-mode-accent-color));
@@ -164,7 +173,7 @@ nav {
   img#gh-avatar {
     border-radius: 50%;
     transition: transform 0.2s ease;
-    border: 2px solid light-dark(var(--light-mode-border-color), var(--dark-mode-border-color));
+    border: 2px solid light-dark(var(--light-mode-highlight-color), var(--dark-mode-highlight-color));
   }
 
   #nav-logo:hover img#gh-avatar {
@@ -304,20 +313,21 @@ main {
         display: block;
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
+        background-color: light-dark(var(--light-mode-surface-color), var(--dark-mode-surface-color));
         border: 1px solid light-dark(var(--light-mode-border-color), var(--dark-mode-border-color));
         transition: all 0.2s ease;
       }
 
       a:hover code {
         background-color: light-dark(var(--light-mode-accent-color), var(--dark-mode-accent-color));
-        color: white;
+        color: light-dark(var(--light-mode-accent-foreground-color), var(--dark-mode-accent-foreground-color));
         border-color: light-dark(var(--light-mode-accent-color), var(--dark-mode-accent-color));
       }
     }
 
     a.disabled > code {
       background-color: light-dark(var(--light-mode-accent-color), var(--dark-mode-accent-color));
-      color: white;
+      color: light-dark(var(--light-mode-accent-foreground-color), var(--dark-mode-accent-foreground-color));
       border-color: light-dark(var(--light-mode-accent-color), var(--dark-mode-accent-color));
     }
   }
@@ -382,7 +392,7 @@ button#load-more {
 
 button#load-more:hover {
   background-color: light-dark(var(--light-mode-accent-color), var(--dark-mode-accent-color));
-  color: white;
+  color: light-dark(var(--light-mode-accent-foreground-color), var(--dark-mode-accent-foreground-color));
   border-color: light-dark(var(--light-mode-accent-color), var(--dark-mode-accent-color));
 }
 
@@ -400,7 +410,7 @@ button#load-more:hover {
       height: 70px;
       padding: 0 2rem;
       border-bottom: 1px solid light-dark(var(--light-mode-border-color), var(--dark-mode-border-color));
-      background-color: light-dark(#ffffff, #2d3748);
+      background-color: light-dark(var(--light-mode-surface-color), var(--dark-mode-surface-color));
       position: sticky;
       top: 0;
       z-index: 100;
@@ -490,7 +500,7 @@ button#load-more:hover {
       padding: 0 1rem;
       height: 60px;
       border-bottom: 1px solid light-dark(var(--light-mode-border-color), var(--dark-mode-border-color));
-      background-color: light-dark(#ffffff, #2d3748);
+      background-color: light-dark(var(--light-mode-surface-color), var(--dark-mode-surface-color));
       position: sticky;
       top: 0;
       z-index: 100;
@@ -579,7 +589,7 @@ div#article-body-content-wrapper > div#posts-wrapper {
   ul > li {
     list-style-type: none;
     margin-bottom: 1rem;
-    background-color: light-dark(#ffffff, #2d3748);
+    background-color: light-dark(var(--light-mode-surface-color), var(--dark-mode-surface-color));
     border: 1px solid light-dark(var(--light-mode-border-color), var(--dark-mode-border-color));
     border-radius: 8px;
     transition: all 0.2s ease;
