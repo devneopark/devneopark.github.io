@@ -584,6 +584,7 @@ button#load-more:hover {
 div#article-body-content-wrapper > div#posts-wrapper {
   ul {
     list-style: none;
+    padding-left: 0;
   }
 
   ul > li {
