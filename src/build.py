@@ -13,6 +13,7 @@ DIST_DIR = "dist"
 DIST_ASSETS_DIR = os.path.join(DIST_DIR, "assets")
 SITE_URL = "https://devneopark.github.io"
 ROBOTS_FILENAME = "robots.txt"
+GOOGLE_VERIFICATION_FILENAME = "googleec3a32855dc9da2c.html"
 PAGE_SIZE = 10
 
 def read_text(path: str) -> str:
@@ -84,13 +85,14 @@ def copy_assets_clean() -> None:
     if os.path.exists(tpl_path):
         os.remove(tpl_path)
 
-    robots_in_assets = os.path.join(DIST_ASSETS_DIR, ROBOTS_FILENAME)
-    if os.path.exists(robots_in_assets):
-        os.remove(robots_in_assets)
-    shutil.copy2(
-        os.path.join(ASSETS_DIR, ROBOTS_FILENAME),
-        os.path.join(DIST_DIR, ROBOTS_FILENAME),
-    )
+    for filename in (ROBOTS_FILENAME, GOOGLE_VERIFICATION_FILENAME):
+        asset_copy = os.path.join(DIST_ASSETS_DIR, filename)
+        if os.path.exists(asset_copy):
+            os.remove(asset_copy)
+        shutil.copy2(
+            os.path.join(ASSETS_DIR, filename),
+            os.path.join(DIST_DIR, filename),
+        )
 
 def build_post_pages(html_template: str):
     posts_meta = []
