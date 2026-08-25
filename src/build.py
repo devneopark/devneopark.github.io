@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+from xml.sax.saxutils import escape
 
 import funcs.parser
 import funcs.converter
@@ -10,6 +11,7 @@ ASSETS_DIR = "_assets"
 POSTS_DIR = "_posts"
 DIST_DIR = "dist"
 DIST_ASSETS_DIR = os.path.join(DIST_DIR, "assets")
+SITE_URL = "https://devneopark.github.io"
 ROBOTS_FILENAME = "robots.txt"
 PAGE_SIZE = 10
 
@@ -47,6 +49,32 @@ def write_json(path: str, data) -> None:
     ensure_dir(os.path.dirname(path))
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
+
+def write_sitemap(all_posts_meta) -> None:
+    entries = [
+        ("/", None),
+        ("/posts.html", None),
+        ("/tags.html", None),
+    ]
+    entries.extend(
+        (f"/posts/{meta['seq']}.html", meta.get("posted_at"))
+        for meta in all_posts_meta
+    )
+
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    for path, lastmod in entries:
+        lines.append("  <url>")
+        lines.append(f"    <loc>{escape(SITE_URL + path)}</loc>")
+        if lastmod:
+            lines.append(f"    <lastmod>{escape(str(lastmod))}</lastmod>")
+        lines.append("  </url>")
+    lines.append("</urlset>")
+
+    with open(os.path.join(DIST_DIR, "sitemap.xml"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
 
 def copy_assets_clean() -> None:
     if os.path.exists(DIST_ASSETS_DIR):
@@ -155,6 +183,7 @@ def main():
     write_posts_index_pages(posts_meta)
     write_tag_index_pages(tags_map)
     write_tags_list_file(tags_map)
+    write_sitemap(posts_meta)
 
     build_static_pages(html_template)
 
