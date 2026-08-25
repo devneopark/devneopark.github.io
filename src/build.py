@@ -10,6 +10,7 @@ ASSETS_DIR = "_assets"
 POSTS_DIR = "_posts"
 DIST_DIR = "dist"
 DIST_ASSETS_DIR = os.path.join(DIST_DIR, "assets")
+ROBOTS_FILENAME = "robots.txt"
 PAGE_SIZE = 10
 
 def read_text(path: str) -> str:
@@ -54,6 +55,14 @@ def copy_assets_clean() -> None:
     tpl_path = os.path.join(DIST_ASSETS_DIR, "template.html")
     if os.path.exists(tpl_path):
         os.remove(tpl_path)
+
+    robots_in_assets = os.path.join(DIST_ASSETS_DIR, ROBOTS_FILENAME)
+    if os.path.exists(robots_in_assets):
+        os.remove(robots_in_assets)
+    shutil.copy2(
+        os.path.join(ASSETS_DIR, ROBOTS_FILENAME),
+        os.path.join(DIST_DIR, ROBOTS_FILENAME),
+    )
 
 def build_post_pages(html_template: str):
     posts_meta = []
