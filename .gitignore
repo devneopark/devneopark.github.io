@@ -5,4 +5,3 @@ dist/*
 *.pyc
 .DS_Store
 docker-compose.yml
-README.md
