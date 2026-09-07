@@ -1,45 +1,82 @@
-def _render_tags_ul(tags):
+from __future__ import annotations
+
+from html import escape
+from pathlib import Path
+from urllib.parse import urlencode
+
+from funcs.parser import Post
+
+
+def _render_tags(tags: tuple[str, ...]) -> str:
     if not tags:
         return "<ul></ul>"
+
     items = []
-    for t in tags:
-        items.append(f"<li><a href='/tags.html?tag={t}'>#{t}</a></li>")
+    for tag in tags:
+        label = escape(tag)
+        query = urlencode({"tag": tag})
+        items.append(f"<li><a href='/tags.html?{query}'>#{label}</a></li>")
     return "<ul>\n" + "\n".join(items) + "\n</ul>"
 
 
-def generate_post(html_path, html_template, body_html, meta: dict, jss: str = ""):
-    template = html_template
+def _replace_template(template: str, **values: str) -> str:
+    for placeholder, value in values.items():
+        template = template.replace(placeholder, value)
+    return template
 
-    template = template.replace("${title}", meta["title"])
+
+def generate_post(
+    html_path: str | Path,
+    html_template: str,
+    body_html: str,
+    post: Post,
+) -> None:
+    safe_title = escape(post.title)
+    safe_summary = escape(post.summary, quote=True)
+    safe_posted_at = escape(post.posted_at, quote=True)
     head_tags = (
-        f'<meta name="Date" content="{meta["posted_at"]}">\n'
-        f'    <meta name="Keywords" content="{meta["title"]}">\n'
-        f'    <meta name="Keywords" content="{meta["summary"]}">\n'
-        f'    <meta name="Description" content="{meta["summary"]}">'
+        f'<meta name="date" content="{safe_posted_at}">\n'
+        f'    <meta name="keywords" content="{safe_title}">\n'
+        f'    <meta name="keywords" content="{safe_summary}">\n'
+        f'    <meta name="description" content="{safe_summary}">'
     )
-    template = template.replace("${head.tags}", head_tags)
-
-    template = template.replace("${jss}", jss or "")
-
     article_header = (
-        f"<h1>{meta['title']}</h1>\n"
-        f"{_render_tags_ul(meta.get('tags', []))}\n"
-        f"<p>{meta['posted_at']}</p>"
+        f"<h1>{safe_title}</h1>\n"
+        f"{_render_tags(post.tags)}\n"
+        f"<p>{escape(post.posted_at)}</p>"
     )
-    template = template.replace("            ${article.header}", article_header)
-    template = template.replace("                ${article.content}", body_html)
+    html = _replace_template(
+        html_template,
+        **{
+            "${title}": safe_title,
+            "${head.tags}": head_tags,
+            "${jss}": "",
+            "            ${article.header}": article_header,
+            "                ${article.content}": body_html,
+        },
+    )
+    Path(html_path).write_text(html, encoding="utf-8")
 
-    with open(html_path, "w", encoding="utf-8") as f:
-        f.write(template)
 
-
-def generate_static(html_path, html_template, body, title, js_path: str):
-    template = html_template
-    template = template.replace("${head.tags}", "")
-    template = template.replace("${title}", title)
-    template = template.replace("${jss}", f"<script type='module' src='{js_path}'></script>" if js_path else "")
-    template = template.replace("            ${article.header}", f"<h1>{title}</h1>")
-    template = template.replace("                ${article.content}", body)
-
-    with open(html_path, "w", encoding="utf-8") as f:
-        f.write(template)
+def generate_static(
+    html_path: str | Path,
+    html_template: str,
+    body_html: str,
+    title: str,
+    js_path: str = "",
+) -> None:
+    html = _replace_template(
+        html_template,
+        **{
+            "${head.tags}": "",
+            "${title}": escape(title),
+            "${jss}": (
+                f"<script type='module' src='{escape(js_path, quote=True)}'></script>"
+                if js_path
+                else ""
+            ),
+            "            ${article.header}": f"<h1>{escape(title)}</h1>",
+            "                ${article.content}": body_html,
+        },
+    )
+    Path(html_path).write_text(html, encoding="utf-8")

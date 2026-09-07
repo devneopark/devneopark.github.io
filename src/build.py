@@ -1,67 +1,157 @@
+from __future__ import annotations
+
 import json
-import os
 import shutil
+from collections import Counter
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Iterator
 from xml.sax.saxutils import escape
 
-import funcs.parser
-import funcs.converter
-import funcs.html_generator
+from funcs import converter, html_generator, parser
+from funcs.parser import Post
 
-ASSETS_DIR = "_assets"
-POSTS_DIR = "_posts"
-DIST_DIR = "dist"
-DIST_ASSETS_DIR = os.path.join(DIST_DIR, "assets")
+
+PAGE_SIZE = 10
 SITE_URL = "https://devneopark.github.io"
 ROBOTS_FILENAME = "robots.txt"
 GOOGLE_VERIFICATION_FILENAME = "googleec3a32855dc9da2c.html"
-PAGE_SIZE = 10
-
-def read_text(path: str) -> str:
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read()
-
-def ensure_dir(path: str) -> None:
-    if not path:
-        return
-    if os.path.exists(path):
-        if not os.path.isdir(path):
-            raise FileExistsError(f"{path} exists and is not a directory")
-        return
-    os.makedirs(path, exist_ok=True)
-#     os.makedirs(path, exist_ok=True)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
-def list_files(dir_path: str):
-    return sorted(
-        f for f in os.listdir(dir_path)
-        if os.path.isfile(os.path.join(dir_path, f))
+@dataclass(frozen=True)
+class BuildPaths:
+    project_root: Path
+    assets_dir: Path
+    posts_dir: Path
+    dist_dir: Path
+    dist_assets_dir: Path
+    dist_posts_dir: Path
+
+    @classmethod
+    def from_project_root(cls, project_root: Path) -> "BuildPaths":
+        dist_dir = project_root / "dist"
+        return cls(
+            project_root=project_root,
+            assets_dir=project_root / "_assets",
+            posts_dir=project_root / "_posts",
+            dist_dir=dist_dir,
+            dist_assets_dir=dist_dir / "assets",
+            dist_posts_dir=dist_dir / "posts",
+        )
+
+
+def paginate(items: list[Any], size: int) -> Iterator[tuple[int, list[Any]]]:
+    if size <= 0:
+        raise ValueError("페이지 크기는 0보다 커야 합니다.")
+    for start in range(0, len(items), size):
+        yield start // size + 1, items[start:start + size]
+
+
+def write_json(path: Path, data: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(data, indent=4, ensure_ascii=False) + "\n",
+        encoding="utf-8",
     )
 
-def paginate(items, size: int):
-    n = len(items)
-    i = 0
-    page = 1
-    while i < n:
-        yield page, items[i:i + size]
-        i += size
-        page += 1
 
-def write_json(path: str, data) -> None:
-    ensure_dir(os.path.dirname(path))
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
+def load_posts(paths: BuildPaths) -> list[Post]:
+    posts = [parser.parse(path) for path in sorted(paths.posts_dir.glob("*.md"))]
+    duplicates = sorted(seq for seq, count in Counter(post.seq for post in posts).items() if count > 1)
+    if duplicates:
+        raise ValueError(f"중복된 포스트 seq가 있습니다: {duplicates}")
+    return sorted(posts, key=lambda post: post.seq, reverse=True)
 
-def write_sitemap(all_posts_meta) -> None:
+
+def group_posts_by_tag(posts: list[Post]) -> dict[str, list[Post]]:
+    grouped: dict[str, list[Post]] = {}
+    for post in posts:
+        for tag in post.tags:
+            grouped.setdefault(tag, []).append(post)
+    return grouped
+
+
+def clean_generated_output(paths: BuildPaths) -> None:
+    paths.dist_dir.mkdir(parents=True, exist_ok=True)
+    for directory in (paths.dist_assets_dir, paths.dist_posts_dir):
+        if directory.exists():
+            shutil.rmtree(directory)
+
+    generated_files = (
+        "index.html",
+        "posts.html",
+        "tags.html",
+        "sitemap.xml",
+        ROBOTS_FILENAME,
+        GOOGLE_VERIFICATION_FILENAME,
+    )
+    for filename in generated_files:
+        path = paths.dist_dir / filename
+        if path.exists():
+            path.unlink()
+
+
+def copy_assets(paths: BuildPaths) -> None:
+    shutil.copytree(paths.assets_dir, paths.dist_assets_dir)
+    template_path = paths.dist_assets_dir / "template.html"
+    if template_path.exists():
+        template_path.unlink()
+
+    for filename in (ROBOTS_FILENAME, GOOGLE_VERIFICATION_FILENAME):
+        source = paths.assets_dir / filename
+        destination = paths.dist_dir / filename
+        shutil.copy2(source, destination)
+
+
+def write_post_pages(paths: BuildPaths, template: str, posts: list[Post]) -> None:
+    paths.dist_posts_dir.mkdir(parents=True, exist_ok=True)
+    for post in posts:
+        body_html = converter.convert(post.body)
+        html_generator.generate_post(
+            paths.dist_posts_dir / f"{post.seq}.html",
+            template,
+            body_html,
+            post,
+        )
+
+
+def write_posts_index_pages(paths: BuildPaths, posts: list[Post]) -> None:
+    base = paths.dist_assets_dir / "pages" / "posts"
+    for page_number, page_posts in paginate(posts, PAGE_SIZE):
+        write_json(
+            base / f"pages.{page_number}.json",
+            [post.to_dict() for post in page_posts],
+        )
+
+
+def write_tag_index_pages(
+    paths: BuildPaths,
+    posts_by_tag: dict[str, list[Post]],
+) -> None:
+    base = paths.dist_assets_dir / "pages" / "tags"
+    for tag, posts in sorted(posts_by_tag.items()):
+        for page_number, page_posts in paginate(posts, PAGE_SIZE):
+            write_json(
+                base / tag / f"pages.{page_number}.json",
+                [post.to_dict() for post in page_posts],
+            )
+
+
+def write_tags_list_file(paths: BuildPaths, posts_by_tag: dict[str, list[Post]]) -> None:
+    write_json(
+        paths.dist_assets_dir / "pages" / "tags" / "tags.json",
+        {"tags": sorted(posts_by_tag)},
+    )
+
+
+def write_sitemap(paths: BuildPaths, posts: list[Post]) -> None:
     entries = [
         ("/", None),
         ("/posts.html", None),
         ("/tags.html", None),
+        *((f"/posts/{post.seq}.html", post.posted_at) for post in posts),
     ]
-    entries.extend(
-        (f"/posts/{meta['seq']}.html", meta.get("posted_at"))
-        for meta in all_posts_meta
-    )
-
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
@@ -70,126 +160,52 @@ def write_sitemap(all_posts_meta) -> None:
         lines.append("  <url>")
         lines.append(f"    <loc>{escape(SITE_URL + path)}</loc>")
         if lastmod:
-            lines.append(f"    <lastmod>{escape(str(lastmod))}</lastmod>")
+            lines.append(f"    <lastmod>{escape(lastmod)}</lastmod>")
         lines.append("  </url>")
     lines.append("</urlset>")
+    (paths.dist_dir / "sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-    with open(os.path.join(DIST_DIR, "sitemap.xml"), "w", encoding="utf-8") as f:
-        f.write("\n".join(lines) + "\n")
 
-def copy_assets_clean() -> None:
-    if os.path.exists(DIST_ASSETS_DIR):
-        shutil.rmtree(DIST_ASSETS_DIR)
-    shutil.copytree(ASSETS_DIR, DIST_ASSETS_DIR)
-    tpl_path = os.path.join(DIST_ASSETS_DIR, "template.html")
-    if os.path.exists(tpl_path):
-        os.remove(tpl_path)
-
-    for filename in (ROBOTS_FILENAME, GOOGLE_VERIFICATION_FILENAME):
-        asset_copy = os.path.join(DIST_ASSETS_DIR, filename)
-        if os.path.exists(asset_copy):
-            os.remove(asset_copy)
-        shutil.copy2(
-            os.path.join(ASSETS_DIR, filename),
-            os.path.join(DIST_DIR, filename),
-        )
-
-def build_post_pages(html_template: str):
-    posts_meta = []
-    tags_map = {}
-
-    posts_dir = os.path.join(DIST_DIR, "posts")
-    ensure_dir(posts_dir)
-
-    for filename in list_files(POSTS_DIR):
-        meta, body = funcs.parser.parse(os.path.join(POSTS_DIR, filename))
-        meta["filename"] = filename
-
-        body_html = funcs.converter.convert(body)
-        html_path = os.path.join(posts_dir, f"{meta['seq']}.html")
-        funcs.html_generator.generate_post(
-            html_path, html_template, body_html, meta, jss=""
-        )
-
-        posts_meta.append(meta)
-
-        for tag in meta.get("tags", []):
-            if tag not in tags_map:
-                tags_map[tag] = []
-            tags_map[tag].append(meta)
-
-    return posts_meta, tags_map
-
-def write_posts_index_pages(all_posts_meta):
-    base = os.path.join(DIST_ASSETS_DIR, "pages", "posts")
-    for page_no, chunk in paginate(all_posts_meta, PAGE_SIZE):
-        path = os.path.join(base, f"pages.{page_no}.json")
-        write_json(path, chunk)
-
-def write_tag_index_pages(tags_map):
-    base = os.path.join(DIST_ASSETS_DIR, "pages", "tags")
-    for tag, metas in tags_map.items():
-        for page_no, chunk in paginate(metas, PAGE_SIZE):
-            path = os.path.join(base, tag, f"pages.{page_no}.json")
-            write_json(path, chunk)
-
-def write_tags_list_file(tags_map):
-    tags = sorted(tags_map.keys())
-    path = os.path.join(DIST_ASSETS_DIR, "pages", "tags", "tags.json")
-    write_json(path, {"tags": tags})
-
-def build_static_pages(html_template: str):
-    home_md_path = os.path.join(ASSETS_DIR, "HOME.md")
-    home_md = read_text(home_md_path)
-    home_body = funcs.converter.convert(home_md)
-    funcs.html_generator.generate_static(
-        os.path.join(DIST_DIR, "index.html"),
-        html_template,
-        home_body,
-        "Home",
-        ""
-    )
-
-    funcs.html_generator.generate_static(
-        os.path.join(DIST_DIR, "posts.html"),
-        html_template,
+def write_static_pages(paths: BuildPaths, template: str) -> None:
+    home_body = converter.convert((paths.assets_dir / "HOME.md").read_text(encoding="utf-8"))
+    html_generator.generate_static(paths.dist_dir / "index.html", template, home_body, "Home")
+    html_generator.generate_static(
+        paths.dist_dir / "posts.html",
+        template,
         "",
         "Posts",
-        "/assets/js/posts.mjs"
+        "/assets/js/posts.mjs",
     )
-
-    funcs.html_generator.generate_static(
-        os.path.join(DIST_DIR, "tags.html"),
-        html_template,
+    html_generator.generate_static(
+        paths.dist_dir / "tags.html",
+        template,
         "",
         "Tags",
-        "/assets/js/tags.posts.mjs"
+        "/assets/js/tags.posts.mjs",
     )
 
-def main():
+
+def build_site(project_root: Path = PROJECT_ROOT) -> None:
+    paths = BuildPaths.from_project_root(project_root)
+    template = (paths.assets_dir / "template.html").read_text(encoding="utf-8")
+    posts = load_posts(paths)
+    posts_by_tag = group_posts_by_tag(posts)
+
+    clean_generated_output(paths)
+    copy_assets(paths)
+    write_post_pages(paths, template, posts)
+    write_posts_index_pages(paths, posts)
+    write_tag_index_pages(paths, posts_by_tag)
+    write_tags_list_file(paths, posts_by_tag)
+    write_sitemap(paths, posts)
+    write_static_pages(paths, template)
+
+
+def main() -> None:
     print("build started.")
-    ensure_dir(DIST_DIR)
-
-    html_template = read_text(os.path.join(ASSETS_DIR, "template.html"))
-
-    posts_meta, tags_map = build_post_pages(html_template)
-    posts_meta = list(reversed(posts_meta))
-
-    tags_map = {
-        tag: sorted(metas, key=lambda m: m["seq"], reverse=True)
-        for tag, metas in tags_map.items()
-    }
-
-    copy_assets_clean()
-
-    write_posts_index_pages(posts_meta)
-    write_tag_index_pages(tags_map)
-    write_tags_list_file(tags_map)
-    write_sitemap(posts_meta)
-
-    build_static_pages(html_template)
-
+    build_site()
     print("build done.")
+
 
 if __name__ == "__main__":
     main()
