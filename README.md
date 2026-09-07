@@ -56,7 +56,9 @@ python3 -m http.server 8000 --directory dist
 │   ├── build.py              # 빌드 진입점
 │   └── funcs/
 │       ├── converter.py      # Markdown → HTML 변환
+│       ├── build_output.py   # 생성 디렉터리와 HTML 출력
 │       ├── html_generator.py # 템플릿 치환과 HTML 생성
+│       ├── index_generator.py # JSON 인덱스와 sitemap 생성
 │       └── parser.py         # YAML front matter 파싱
 ├── tests/                    # unittest 기반 테스트
 ├── .github/workflows/
@@ -147,3 +149,7 @@ python3 -m unittest discover -s tests -v
 - HTML 메타데이터와 태그 URL의 이스케이프
 - 페이지네이션 입력 검증
 - 전체 빌드와 오래된 생성 파일 정리
+
+## 코드 스타일
+
+Python 코드는 Google Python Style Guide를 기본 원칙으로 사용하고, 포맷팅 기준은 `pyproject.toml`에 정의한 Black 88자 줄 길이를 따릅니다. 함수와 모듈은 하나의 책임에 집중시키며, 공개 함수와 주요 경계에는 타입 어노테이션을 사용합니다.

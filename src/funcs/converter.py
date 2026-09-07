@@ -12,4 +12,6 @@ class StrikethroughExtension(Extension):
         )
 
 def convert(md_content: str) -> str:
-    return Markdown(extensions=["fenced_code", StrikethroughExtension()]).convert(md_content)
+    return Markdown(
+        extensions=["fenced_code", StrikethroughExtension()]
+    ).convert(md_content)

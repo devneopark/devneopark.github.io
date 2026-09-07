@@ -21,6 +21,8 @@ Python으로 구현한 개인 블로그용 정적 사이트 생성기다. 별도
 - `src/funcs/parser.py`: YAML front matter와 본문 분리
 - `src/funcs/converter.py`: Markdown을 HTML로 변환
 - `src/funcs/html_generator.py`: 템플릿 치환과 HTML 파일 생성
+- `src/funcs/build_output.py`: 경로 모델, 생성 디렉터리와 HTML 출력
+- `src/funcs/index_generator.py`: JSON 인덱스와 sitemap 생성
 - `tests/`: 표준 `unittest` 기반 회귀·통합 테스트
 - `.github/workflows/deploy.yml`: GitHub Pages 배포 워크플로우
 - `dist/`: 빌드 산출물. Git에서 제외되는 생성 디렉터리
@@ -64,7 +66,11 @@ python3 src/build.py
 ## 구현 규칙
 
 - 요청을 해결하는 데 필요한 최소 범위로 변경한다.
-- Python은 기존 모듈 구조와 4칸 들여쓰기를 유지하고, 파일 입출력 시 UTF-8을 명시한다.
+- Python은 Google Python Style Guide를 기본으로 하며 Black 설정의 88자 줄 길이를 따른다.
+- Python은 공백 4칸을 사용하고, 최상위 정의 사이에는 빈 줄 2개를 둔다.
+- 모듈·함수·변수는 `snake_case`, 클래스·예외는 `CapWords`, 상수는 `UPPER_SNAKE_CASE`를 사용한다.
+- 공개 함수와 주요 내부 경계에는 타입 어노테이션을 사용하고, 함수는 하나의 책임에 집중시킨다.
+- 파일 입출력 시 UTF-8을 명시한다.
 - 경로 처리 방식은 기존 `os.path` 기반 코드와 일관되게 유지한다. 전면적인 스타일 변경은 별도 요청이 있을 때만 수행한다.
 - JavaScript는 브라우저에서 직접 실행되는 ES 모듈이다. Node.js 전용 API나 번들러 전제를 추가하지 않는다.
 - 템플릿과 생성기에 삽입되는 값의 HTML 이스케이프 여부를 확인한다. 사용자 제어 값이 속성이나 마크업에 들어가면 안전성을 검토한다.
