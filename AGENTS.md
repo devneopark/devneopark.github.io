@@ -24,6 +24,7 @@ Python으로 구현한 개인 블로그용 정적 사이트 생성기다. 별도
 - `src/funcs/build_output.py`: 경로 모델, 생성 디렉터리와 HTML 출력
 - `src/funcs/index_generator.py`: JSON 인덱스와 sitemap 생성
 - `tests/`: 표준 `unittest` 기반 회귀·통합 테스트
+- `requirements.txt`: 고정된 Python 런타임 의존성
 - `.github/workflows/deploy.yml`: GitHub Pages 배포 워크플로우
 - `dist/`: 빌드 산출물. Git에서 제외되는 생성 디렉터리
 
@@ -51,17 +52,17 @@ Python으로 구현한 개인 블로그용 정적 사이트 생성기다. 별도
 
 ## 개발 환경
 
-권장 환경은 배포 워크플로우와 같은 Python 3.11이다. 런타임 의존성은 `PyYAML`과 `markdown`이다.
+권장 환경은 배포 워크플로우와 같은 Python 3.11이다. 런타임 의존성은 `requirements.txt`에 고정한다.
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python3 -m pip install PyYAML markdown
+python3 -m pip install -r requirements.txt
 python3 -m unittest discover -s tests -v
 python3 src/build.py
 ```
 
-의존성 선언 파일은 현재 없다. 새 의존성을 추가할 때는 로컬 설치 방법과 `.github/workflows/deploy.yml`을 함께 갱신해야 한다.
+새 의존성을 추가할 때는 `requirements.txt`, 로컬 설치 방법과 `.github/workflows/deploy.yml`이 일치하는지 확인한다.
 
 ## 구현 규칙
 

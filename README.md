@@ -29,7 +29,7 @@ cd devneopark.github.io
 
 python3 -m venv .venv
 source .venv/bin/activate
-python3 -m pip install PyYAML markdown
+python3 -m pip install -r requirements.txt
 ```
 
 저장소 루트에서 빌드를 실행합니다.
@@ -61,6 +61,7 @@ python3 -m http.server 8000 --directory dist
 │       ├── index_generator.py # JSON 인덱스와 sitemap 생성
 │       └── parser.py         # YAML front matter 파싱
 ├── tests/                    # unittest 기반 테스트
+├── requirements.txt          # 고정된 Python 의존성
 ├── .github/workflows/
 │   └── deploy.yml            # GitHub Pages 배포
 └── dist/                     # 빌드 산출물
@@ -133,6 +134,8 @@ dist/
 5. GitHub Pages 배포
 
 배포 대상 저장소에서는 GitHub Pages의 Source가 **GitHub Actions**로 설정되어 있어야 합니다.
+
+패키지 버전은 [`requirements.txt`](requirements.txt)에 고정되어 로컬과 CI에서 동일하게 사용됩니다.
 
 ## 테스트
 

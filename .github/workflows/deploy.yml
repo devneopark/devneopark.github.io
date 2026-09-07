@@ -29,11 +29,7 @@ jobs:
 
       - name: "페이지 빌드"
         run: |
-          pip install PyYAML && \
-          pip install markdown && \
-          mkdir -p dist/posts dist/tags && \
-          cp -r _assets/ dist/assets/ && \
-          rm dist/assets/template.html && \
+          python -m pip install -r requirements.txt && \
           python3 src/build.py
 
       - name: "Pages 설정"
