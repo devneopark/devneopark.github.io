@@ -8,6 +8,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
 import build
+from funcs import index_generator, parser
+from funcs.build_output import BuildPaths
 
 
 PROJECT_ROOT = Path(__file__).parents[1]
@@ -38,7 +40,7 @@ class BuildTest(unittest.TestCase):
 
     def test_paginate_rejects_invalid_page_size(self):
         with self.assertRaises(ValueError):
-            list(build.paginate([1], 0))
+            list(index_generator.paginate([1], 0))
 
     def test_load_posts_rejects_duplicate_sequence_numbers(self):
         posts_dir = self.project_root / "_posts"
@@ -55,7 +57,7 @@ class BuildTest(unittest.TestCase):
         )
 
         with self.assertRaisesRegex(ValueError, "중복된 포스트 seq"):
-            build.load_posts(build.BuildPaths.from_project_root(self.project_root))
+            parser.load_posts(BuildPaths.from_project_root(self.project_root).posts_dir)
 
 
 if __name__ == "__main__":
