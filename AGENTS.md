@@ -21,6 +21,7 @@ Python으로 구현한 개인 블로그용 정적 사이트 생성기다. 별도
 - `src/funcs/parser.py`: YAML front matter와 본문 분리
 - `src/funcs/converter.py`: Markdown을 HTML로 변환
 - `src/funcs/html_generator.py`: 템플릿 치환과 HTML 파일 생성
+- `tests/`: 표준 `unittest` 기반 회귀·통합 테스트
 - `.github/workflows/deploy.yml`: GitHub Pages 배포 워크플로우
 - `dist/`: 빌드 산출물. Git에서 제외되는 생성 디렉터리
 
@@ -54,6 +55,7 @@ Python으로 구현한 개인 블로그용 정적 사이트 생성기다. 별도
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install PyYAML markdown
+python3 -m unittest discover -s tests -v
 python3 src/build.py
 ```
 
@@ -79,10 +81,10 @@ python3 src/build.py
 
 ## 검증
 
-현재 자동화된 테스트 모음은 없다. 변경 범위에 맞춰 다음 검증을 수행한다.
+변경 범위에 맞춰 다음 검증을 수행한다.
 
 - 문서 또는 설정만 변경: 문법, 경로와 실제 저장소 구조를 대조한다.
-- Python 또는 빌드 로직 변경: `python3 src/build.py`를 실행하고 종료 코드와 생성 파일을 확인한다.
+- Python 또는 빌드 로직 변경: `python3 -m unittest discover -s tests -v`와 `python3 src/build.py`를 실행하고 종료 코드와 생성 파일을 확인한다.
 - 템플릿·CSS·JavaScript 변경: 빌드 후 관련 HTML과 정적 파일을 확인하고, 필요하면 로컬 서버에서 화면과 브라우저 콘솔을 점검한다.
 - 메타데이터·정렬·페이지네이션 변경: 포스트 HTML, 목록 JSON과 태그 JSON을 표본 확인한다.
 - sitemap·robots·검색 노출 변경: `dist/sitemap.xml`, `dist/robots.txt`와 기준 URL을 확인한다.

@@ -58,6 +58,7 @@ python3 -m http.server 8000 --directory dist
 │       ├── converter.py      # Markdown → HTML 변환
 │       ├── html_generator.py # 템플릿 치환과 HTML 생성
 │       └── parser.py         # YAML front matter 파싱
+├── tests/                    # unittest 기반 테스트
 ├── .github/workflows/
 │   └── deploy.yml            # GitHub Pages 배포
 └── dist/                     # 빌드 산출물
@@ -130,3 +131,19 @@ dist/
 5. GitHub Pages 배포
 
 배포 대상 저장소에서는 GitHub Pages의 Source가 **GitHub Actions**로 설정되어 있어야 합니다.
+
+## 테스트
+
+테스트는 Python 표준 라이브러리의 `unittest`를 사용합니다.
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+현재 테스트는 다음 범위를 검증합니다.
+
+- YAML front matter 파싱과 필수 메타데이터 검증
+- 날짜 메타데이터 정규화
+- HTML 메타데이터와 태그 URL의 이스케이프
+- 페이지네이션 입력 검증
+- 전체 빌드와 오래된 생성 파일 정리
