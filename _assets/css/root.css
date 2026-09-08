@@ -18,27 +18,27 @@
 
 :root {
   color-scheme: light dark;
-  --light-mode-background-color: #fffaf5;
-  --light-mode-surface-color: #fffdf9;
-  --light-mode-code-background-color: #fff1df;
-  --light-mode-font-color: #2f261f;
-  --light-mode-font-color-secondary: #80644d;
-  --light-mode-box-shadow-color: rgba(122, 66, 18, 0.14);
-  --light-mode-highlight-color: rgba(231, 143, 60, 0.12);
-  --light-mode-accent-color: #E78F3CFF;
-  --light-mode-accent-foreground-color: #24170c;
-  --light-mode-border-color: rgba(231, 143, 60, 0.28);
+  --light-mode-background-color: #f4f8ff;
+  --light-mode-surface-color: #fbfdff;
+  --light-mode-code-background-color: #eaf2ff;
+  --light-mode-font-color: #17253a;
+  --light-mode-font-color-secondary: #4c6480;
+  --light-mode-box-shadow-color: rgba(30, 64, 120, 0.14);
+  --light-mode-highlight-color: rgba(37, 99, 235, 0.12);
+  --light-mode-accent-color: #2563eb;
+  --light-mode-accent-foreground-color: #ffffff;
+  --light-mode-border-color: rgba(37, 99, 235, 0.28);
 
-  --dark-mode-background-color: #17110d;
-  --dark-mode-surface-color: #211812;
-  --dark-mode-code-background-color: #2b1f17;
-  --dark-mode-font-color: #f6ede5;
-  --dark-mode-font-color-secondary: #c9ad95;
+  --dark-mode-background-color: #0d1726;
+  --dark-mode-surface-color: #132238;
+  --dark-mode-code-background-color: #1b2f4a;
+  --dark-mode-font-color: #eaf2ff;
+  --dark-mode-font-color-secondary: #a9bfdc;
   --dark-mode-box-shadow-color: rgba(0, 0, 0, 0.36);
-  --dark-mode-highlight-color: rgba(231, 143, 60, 0.18);
-  --dark-mode-accent-color: #E78F3CFF;
-  --dark-mode-accent-foreground-color: #24170c;
-  --dark-mode-border-color: rgba(231, 143, 60, 0.34);
+  --dark-mode-highlight-color: rgba(96, 165, 250, 0.18);
+  --dark-mode-accent-color: #60a5fa;
+  --dark-mode-accent-foreground-color: #07111f;
+  --dark-mode-border-color: rgba(96, 165, 250, 0.34);
 }
 
 /* defaults */
@@ -127,7 +127,7 @@ p {
 }
 
 blockquote {
-  background-color: light-dark(rgba(231, 143, 60, 0.07), rgba(231, 143, 60, 0.12));
+  background-color: light-dark(var(--light-mode-highlight-color), var(--dark-mode-highlight-color));
   padding: 1rem 1.5rem;
   margin: 1.5rem 0;
   border-left: 4px solid light-dark(var(--light-mode-accent-color), var(--dark-mode-accent-color));
