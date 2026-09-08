@@ -10,6 +10,7 @@ Jekyll 같은 별도의 정적 사이트 프레임워크나 JavaScript 번들러
 - fenced code block과 취소선 문법 지원
 - 전체 포스트와 태그별 포스트의 페이지네이션 JSON 생성
 - Posts 메인, 포스트 목록, 태그 목록 페이지 생성
+- 모든 페이지에 이메일과 GitHub 링크가 있는 공통 Footer 제공
 - sitemap, robots.txt와 검색 엔진 확인 파일 배치
 - GitHub Actions를 통한 GitHub Pages 자동 배포
 

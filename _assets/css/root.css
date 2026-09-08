@@ -622,3 +622,32 @@ div#article-body-content-wrapper > div#posts-wrapper {
     transform: translateY(-2px);
   }
 }
+
+/* site footer */
+
+footer#site-footer {
+  border-top: 1px solid light-dark(var(--light-mode-border-color), var(--dark-mode-border-color));
+  background-color: light-dark(var(--light-mode-surface-color), var(--dark-mode-surface-color));
+  color: light-dark(var(--light-mode-font-color), var(--dark-mode-font-color));
+  width: 100%;
+  padding: 1rem 0 4rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+footer#site-footer a {
+  color: inherit;
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+footer#site-footer a:hover {
+  background-color: light-dark(var(--light-mode-highlight-color), var(--dark-mode-highlight-color));
+  color: light-dark(var(--light-mode-accent-color), var(--dark-mode-accent-color));
+  opacity: 1;
+}
