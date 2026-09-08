@@ -46,7 +46,7 @@ Python으로 구현한 개인 블로그용 정적 사이트 생성기다. 별도
 3. `dist/posts/{seq}.html`을 생성한다.
 4. 포스트 목록과 태그별 페이지 JSON을 `dist/assets/pages/`에 생성한다.
 5. `_assets/`를 `dist/assets/`로 복사하고 배포 위치가 다른 루트 파일을 이동한다.
-6. `dist/index.html`, `dist/posts.html`, `dist/tags.html`, `dist/sitemap.xml`을 생성한다.
+6. `dist/index.html`(Posts 목록), `dist/posts.html`, `dist/tags.html`, `dist/sitemap.xml`을 생성한다.
 
 `dist/assets/`는 빌드 중 정리되지만 `dist/` 전체가 초기화되지는 않는다. 파일 삭제나 경로 변경을 검증할 때는 오래된 산출물이 남을 가능성을 고려한다.
 

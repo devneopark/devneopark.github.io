@@ -9,7 +9,7 @@ Jekyll 같은 별도의 정적 사이트 프레임워크나 JavaScript 번들러
 - YAML front matter가 포함된 Markdown 문서를 HTML 페이지로 변환
 - fenced code block과 취소선 문법 지원
 - 전체 포스트와 태그별 포스트의 페이지네이션 JSON 생성
-- 홈, 포스트 목록, 태그 목록 페이지 생성
+- Posts 메인, 포스트 목록, 태그 목록 페이지 생성
 - sitemap, robots.txt와 검색 엔진 확인 파일 배치
 - GitHub Actions를 통한 GitHub Pages 자동 배포
 
@@ -93,7 +93,7 @@ posted_at: "2025-09-17"
 
 ```text
 dist/
-├── index.html
+├── index.html                 # Posts 메인 페이지
 ├── posts.html
 ├── tags.html
 ├── sitemap.xml
@@ -121,7 +121,7 @@ dist/
 3. Markdown 본문을 HTML로 변환합니다.
 4. 템플릿을 이용해 포스트 페이지를 생성합니다.
 5. 전체 포스트와 태그별 페이지 JSON을 생성합니다.
-6. 정적 리소스와 루트 페이지, sitemap을 `dist/`에 생성합니다.
+6. 정적 리소스와 Posts 메인·목록·태그 페이지, sitemap을 `dist/`에 생성합니다.
 
 ## 배포
 

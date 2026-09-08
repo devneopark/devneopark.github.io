@@ -76,11 +76,12 @@ def write_post_pages(paths: BuildPaths, template: str, posts: list[Post]) -> Non
 
 
 def write_static_pages(paths: BuildPaths, template: str) -> None:
-    home_body = converter.convert(
-        (paths.assets_dir / "HOME.md").read_text(encoding="utf-8")
-    )
     html_generator.generate_static(
-        paths.dist_dir / "index.html", template, home_body, "Home"
+        paths.dist_dir / "index.html",
+        template,
+        "",
+        "Posts",
+        "/assets/js/posts.mjs",
     )
     html_generator.generate_static(
         paths.dist_dir / "posts.html",
